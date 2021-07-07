@@ -39,7 +39,7 @@ class _HomepageState extends State<Homepage> {
   FlutterTts flutterTts = FlutterTts();
 
   Color maincolor = Color(0xff1f1f1f);
-  var languages;
+  dynamic languages;
   String language = "";
   String voice = "";
   double volume = 0.5;
@@ -53,10 +53,103 @@ class _HomepageState extends State<Homepage> {
   get isPaused => ttsState == TtsState.paused;
   get isContinued => ttsState == TtsState.continued;
 
+  @override
+  void initState() {
+    super.initState();
+    initTTs();
+  }
+
+  initTTs() {
+    flutterTts.setStartHandler(() {
+      setState(() {
+        ttsState = TtsState.playing;
+      });
+    });
+    flutterTts.setCompletionHandler(() {
+      setState(() {
+        ttsState = TtsState.stopped;
+      });
+    });
+    flutterTts.setPauseHandler(() {
+      setState(() {
+        ttsState = TtsState.paused;
+      });
+    });
+    flutterTts.setContinueHandler(() {
+      setState(() {
+        ttsState = TtsState.continued;
+      });
+    });
+    flutterTts.setErrorHandler((message) {
+      setState(() {
+        print("Error : $message");
+      });
+    });
+
+    Future getLanguages() async {
+      languages = await flutterTts.getLanguages;
+      if (languages != null) {
+        setState(() {
+          languages;
+        });
+      }
+    }
+  }
+
   speech(String text) async {
+    await flutterTts.setVolume(volume);
+    await flutterTts.setPitch(pitch);
+    await flutterTts.setSpeechRate(rate);
     await flutterTts.speak(text);
   }
 
+  stop() async {
+    await flutterTts.stop();
+  }
+
+  pause() async {
+    await flutterTts.pause();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    flutterTts.stop();
+  }
+
+  List<DropdownMenuItem<String>> getLanguagesDropDownMenuItems(
+      dynamic languages) {
+    var items = <DropdownMenuItem<String>>[];
+    for (dynamic type in languages) {
+      items.add(DropdownMenuItem(
+          value: type as String?, child: Text(type as String)));
+    }
+    return items;
+  }
+
+  void changedLanguageDropDownItem(String selectedType) {
+    setState(() {
+      languages = selectedType;
+      flutterTts.setLanguage(languages);
+    });
+  }
+
+  void _onChange(String text) {
+    setState(() {
+      text = text;
+    });
+  }
+
+  Widget _languageDropDownSection(dynamic languages) => Container(
+      padding: EdgeInsets.only(top: 10.0),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        DropdownButton(
+          value: language,
+          items: getLanguagesDropDownMenuItems(languages),
+          onChanged: changedLanguageDropDownItem,
+        ),
+      ]));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,6 +199,7 @@ class _HomepageState extends State<Homepage> {
                       SizedBox(
                         height: 20,
                       ),
+                      _languageDropDownSection(languages),
                       SizedBox(
                         height: 50,
                         width: 200,
