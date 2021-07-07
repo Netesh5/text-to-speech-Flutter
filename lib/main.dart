@@ -28,10 +28,31 @@ class Texttospeech extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-class Homepage extends StatelessWidget {
+class Homepage extends StatefulWidget {
+  @override
+  _HomepageState createState() => _HomepageState();
+}
+
+enum TtsState { playing, stopped, paused, continued }
+
+class _HomepageState extends State<Homepage> {
   FlutterTts flutterTts = FlutterTts();
+
   Color maincolor = Color(0xff1f1f1f);
+  var languages;
+  String language = "";
+  String voice = "";
+  double volume = 0.5;
+  double pitch = 1.0;
+  double rate = 0.5;
+
   TextEditingController textEditingController = TextEditingController();
+  TtsState ttsState = TtsState.stopped;
+  get isPlaying => ttsState == TtsState.playing;
+  get isStopped => ttsState == TtsState.stopped;
+  get isPaused => ttsState == TtsState.paused;
+  get isContinued => ttsState == TtsState.continued;
+
   speech(String text) async {
     await flutterTts.speak(text);
   }
@@ -50,7 +71,7 @@ class Homepage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.9,
+                height: MediaQuery.of(context).size.height * 0.85,
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: Card(
                   shape: RoundedRectangleBorder(
