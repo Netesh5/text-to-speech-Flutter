@@ -214,6 +214,20 @@ class _HomepageState extends State<Homepage> {
                               borderRadius: BorderRadius.circular(10)),
                         ),
                       )
+                        SizedBox(
+                        height: 50,
+                        width: 200,
+                        child: RaisedButton(
+                          onPressed: () => speech(textEditingController.text),
+                          child: Text(
+                            "Stop",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Colors.blueGrey[600],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                      )
                     ],
                   ),
                 ),
