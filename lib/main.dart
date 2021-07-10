@@ -118,8 +118,7 @@ class _HomepageState extends State<Homepage> {
     flutterTts.stop();
   }
 
-  List<DropdownMenuItem<String>> getLanguagesDropDownMenuItems(
-      dynamic languages) {
+  List<DropdownMenuItem<String>> getLanguagesDropDownMenuItems() {
     var items = <DropdownMenuItem<String>>[];
     for (dynamic type in languages) {
       items.add(DropdownMenuItem(
@@ -130,23 +129,23 @@ class _HomepageState extends State<Homepage> {
 
   void changedLanguageDropDownItem(String selectedType) {
     setState(() {
-      languages = selectedType;
-      flutterTts.setLanguage(languages);
+      language = selectedType;
+      flutterTts.setLanguage(language);
     });
   }
 
-  void _onChange(String text) {
+  void onChange(String text) {
     setState(() {
       text = text;
     });
   }
 
-  Widget _languageDropDownSection(dynamic languages) => Container(
+  Widget languageDropDownSection() => Container(
       padding: EdgeInsets.only(top: 10.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         DropdownButton(
           value: language,
-          items: getLanguagesDropDownMenuItems(languages),
+          items: getLanguagesDropDownMenuItems(),
           onChanged: changedLanguageDropDownItem,
         ),
       ]));
@@ -199,7 +198,7 @@ class _HomepageState extends State<Homepage> {
                       SizedBox(
                         height: 20,
                       ),
-                      _languageDropDownSection(languages),
+                      languages != null ? languageDropDownSection() : Text(""),
                       SizedBox(
                         height: 50,
                         width: 200,
@@ -213,8 +212,8 @@ class _HomepageState extends State<Homepage> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                         ),
-                      )
-                        SizedBox(
+                      ),
+                      SizedBox(
                         height: 50,
                         width: 200,
                         child: RaisedButton(
