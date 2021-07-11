@@ -42,7 +42,7 @@ class _HomepageState extends State<Homepage> {
   dynamic languages;
   String? language;
   String? voice;
-  double volume = 0.5;
+  double volume = 1.0;
   double pitch = 1.0;
   double rate = 0.5;
   String? newVoiceText;
@@ -86,16 +86,17 @@ class _HomepageState extends State<Homepage> {
         print("Error : $message");
       });
     });
-
-    Future getLanguages() async {
-      languages = await flutterTts.getLanguages;
-      if (languages != null) {
-        setState(() {
-          return languages;
-        });
-      }
-    }
   }
+
+  /* Future getLanguages() async {
+    languages = await flutterTts.getLanguages;
+    if (languages != null) {
+      setState(() {
+        return languages;
+      });
+    }
+  } */
+  Future<dynamic> getLanguages() => flutterTts.getLanguages;
 
   speech(String text) async {
     await flutterTts.setVolume(volume);
@@ -119,10 +120,16 @@ class _HomepageState extends State<Homepage> {
     flutterTts.stop();
   }
 
-  List<DropdownMenuItem<String>> getLanguagesDropDownMenuItems() {
+  List<DropdownMenuItem<String>> getLanguageDropDownMenuItems(
+      dynamic languages) {
     var items = <DropdownMenuItem<String>>[];
-    for (String type in languages) {
-      items.add(DropdownMenuItem(value: type, child: Text(type)));
+    for (dynamic type in languages) {
+      items.add(DropdownMenuItem(
+          value: type as String?,
+          child: Text(
+            type as String,
+            style: TextStyle(color: Colors.black),
+          )));
     }
     return items;
   }
@@ -140,12 +147,12 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  Widget languageDropDownSection() => Container(
+  Widget languageDropDownSection(dynamic languages) => Container(
       padding: EdgeInsets.only(top: 10.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         DropdownButton(
           value: language,
-          items: getLanguagesDropDownMenuItems(),
+          items: getLanguageDropDownMenuItems(languages),
           onChanged: changedLanguageDropDownItem,
         ),
       ]));
@@ -198,10 +205,37 @@ class _HomepageState extends State<Homepage> {
                       SizedBox(
                         height: 20,
                       ),
-                      languages != null ? languageDropDownSection() : Text(""),
+                      futureBuilder(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      /* languages != null
+                          ? languageDropDownSection(languages)
+                          : Text(""), */
+                      Text(
+                        "Volume",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                       _volume(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        "Rate",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                       _rate(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        "Pitch",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                       _pitch(),
+                      SizedBox(
+                        height: 20,
+                      ),
                       SizedBox(
                         height: 50,
                         width: 200,
@@ -215,6 +249,9 @@ class _HomepageState extends State<Homepage> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                         ),
+                      ),
+                      SizedBox(
+                        height: 20,
                       ),
                       SizedBox(
                         height: 50,
@@ -241,6 +278,21 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
+  Widget futureBuilder() => FutureBuilder<dynamic>(
+      future: getLanguages(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.hasData) {
+          return languageDropDownSection(snapshot.data);
+        } else if (snapshot.hasError) {
+          return Text(
+            'Error loading languages...',
+            style: TextStyle(color: Colors.white),
+          );
+        } else
+          return Text('Loading Languages...',
+              style: TextStyle(color: Colors.white));
+      });
+
   Widget _volume() {
     return Slider(
         value: volume,
@@ -250,6 +302,7 @@ class _HomepageState extends State<Homepage> {
         min: 0.0,
         max: 1.0,
         divisions: 10,
+        activeColor: Colors.white,
         label: "Volume: $volume");
   }
 
@@ -263,7 +316,7 @@ class _HomepageState extends State<Homepage> {
       max: 2.0,
       divisions: 15,
       label: "Pitch: $pitch",
-      activeColor: Colors.red,
+      activeColor: Colors.white,
     );
   }
 
@@ -277,7 +330,7 @@ class _HomepageState extends State<Homepage> {
       max: 1.0,
       divisions: 10,
       label: "Rate: $rate",
-      activeColor: Colors.green,
+      activeColor: Colors.white,
     );
   }
 }
