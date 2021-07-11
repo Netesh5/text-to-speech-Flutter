@@ -40,11 +40,12 @@ class _HomepageState extends State<Homepage> {
 
   Color maincolor = Color(0xff1f1f1f);
   dynamic languages;
-  String language = "";
-  String voice = "";
+  String? language;
+  String? voice;
   double volume = 0.5;
   double pitch = 1.0;
   double rate = 0.5;
+  String? newVoiceText;
 
   TextEditingController textEditingController = TextEditingController();
   TtsState ttsState = TtsState.stopped;
@@ -90,7 +91,7 @@ class _HomepageState extends State<Homepage> {
       languages = await flutterTts.getLanguages;
       if (languages != null) {
         setState(() {
-          languages;
+          return languages;
         });
       }
     }
@@ -120,23 +121,22 @@ class _HomepageState extends State<Homepage> {
 
   List<DropdownMenuItem<String>> getLanguagesDropDownMenuItems() {
     var items = <DropdownMenuItem<String>>[];
-    for (dynamic type in languages) {
-      items.add(DropdownMenuItem(
-          value: type as String?, child: Text(type as String)));
+    for (String type in languages) {
+      items.add(DropdownMenuItem(value: type, child: Text(type)));
     }
     return items;
   }
 
-  void changedLanguageDropDownItem(String selectedType) {
+  void changedLanguageDropDownItem(String? selectedType) {
     setState(() {
       language = selectedType;
-      flutterTts.setLanguage(language);
+      flutterTts.setLanguage(language!);
     });
   }
 
   void onChange(String text) {
     setState(() {
-      text = text;
+      newVoiceText = text;
     });
   }
 
@@ -199,6 +199,9 @@ class _HomepageState extends State<Homepage> {
                         height: 20,
                       ),
                       languages != null ? languageDropDownSection() : Text(""),
+                      _volume(),
+                      _rate(),
+                      _pitch(),
                       SizedBox(
                         height: 50,
                         width: 200,
@@ -235,6 +238,46 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _volume() {
+    return Slider(
+        value: volume,
+        onChanged: (newVolume) {
+          setState(() => volume = newVolume);
+        },
+        min: 0.0,
+        max: 1.0,
+        divisions: 10,
+        label: "Volume: $volume");
+  }
+
+  Widget _pitch() {
+    return Slider(
+      value: pitch,
+      onChanged: (newPitch) {
+        setState(() => pitch = newPitch);
+      },
+      min: 0.5,
+      max: 2.0,
+      divisions: 15,
+      label: "Pitch: $pitch",
+      activeColor: Colors.red,
+    );
+  }
+
+  Widget _rate() {
+    return Slider(
+      value: rate,
+      onChanged: (newRate) {
+        setState(() => rate = newRate);
+      },
+      min: 0.0,
+      max: 1.0,
+      divisions: 10,
+      label: "Rate: $rate",
+      activeColor: Colors.green,
     );
   }
 }
