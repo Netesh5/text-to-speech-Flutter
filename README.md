@@ -12,8 +12,9 @@ Some Features :
   Pitch control,
   Speed control
   
- Screenshots
+ Screenshot
  
+ <img src="https://user-images.githubusercontent.com/48326144/141949357-6f699fd9-05c3-4a57-8d2d-861eb8a40df7.jpg" width="270" height="500">
 
 A few resources to get you started if this is your first Flutter project:
 
