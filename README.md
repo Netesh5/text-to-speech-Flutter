@@ -5,12 +5,12 @@ This app can change text to voice .
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This app can change the text to voice
 
 It has Some Features like :
- . Volume control,
- . Pitch control,
- . Speed control
+ * Volume control,
+ * Pitch control,
+ * Speed control
   
  Screenshot
  
